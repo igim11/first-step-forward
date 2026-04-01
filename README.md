@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # First Step Forward — Finance Assessment Tool
 
 A free finance baseline tool that captures emails via Beehiiv and delivers a personalized 28-day savings plan.
@@ -23,6 +22,3 @@ BEEHIIV_PUB_ID=your_publication_id_here
 /api/subscribe.js  — Serverless function for Beehiiv email capture
 /vercel.json       — Vercel routing config
 ```
-=======
-# first-step-forward
->>>>>>> 0b147c32b30244841c8667cac93823154f748f75
