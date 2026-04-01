@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Assessment — First Step Forward</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1B3A2D;
+    --green-light: #2A5442;
+    --orange: #E8622A;
+    --orange-light: #F07A45;
+    --cream: #F7F4EE;
+    --cream-dark: #EDE8DF;
+    --gray: #8A7F74;
+    --gray-light: #C4BDB5;
+    --ink: #1A1612;
+    --white: #FFFFFF;
+    --red: #C0392B;
+    --success: #27AE60;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+  header { background: var(--green); padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: 'DM Serif Display', serif; color: var(--cream); font-size: 1.2rem; }
+  .brand span { color: var(--orange); }
+  .tagline { font-size: 0.75rem; color: var(--gray-light); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .progress-wrap { background: var(--green-light); height: 3px; }
+  .progress-bar { height: 3px; background: var(--orange); transition: width 0.4s ease; width: 25%; }
+
+  main { max-width: 680px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+  .step-indicator { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 2rem; }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-light); transition: background 0.3s; }
+  .step-dot.active { background: var(--orange); }
+  .step-dot.done { background: var(--green); }
+  .step-label { font-size: 0.7rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-left: 0.5rem; }
+
+  .section-eyebrow { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.5rem; font-weight: 500; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--green); line-height: 1.15; margin-bottom: 0.75rem; }
+  .section-desc { font-size: 0.95rem; color: var(--gray); line-height: 1.6; margin-bottom: 2.5rem; }
+
+  .card { background: var(--white); border-radius: 12px; border: 1px solid var(--cream-dark); padding: 1.75rem; margin-bottom: 1.25rem; }
+  .card-title { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+  .card-title::before { content: ''; display: inline-block; width: 16px; height: 2px; background: var(--orange); }
+
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .input-row.single { grid-template-columns: 1fr; }
+  .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  label { font-size: 0.8rem; font-weight: 500; color: var(--ink); }
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .currency-sym { position: absolute; left: 0.75rem; font-size: 0.9rem; color: var(--gray); font-weight: 500; pointer-events: none; }
+  input[type="number"], input[type="email"], input[type="text"] {
+    width: 100%; padding: 0.65rem 0.75rem 0.65rem 1.75rem; border: 1px solid var(--cream-dark);
+    border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--ink);
+    background: var(--cream); transition: border-color 0.2s, background 0.2s; -moz-appearance: textfield;
+  }
+  input[type="email"], input[type="text"] { padding-left: 0.75rem; }
+  input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input:focus { outline: none; border-color: var(--green); background: var(--white); }
+  input.highlight { border-color: var(--orange); background: #FFF8F5; }
+
+  .expense-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .expense-item { display: flex; flex-direction: column; gap: 0.35rem; }
+  .expense-item label { font-size: 0.78rem; color: var(--gray); }
+
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.15s, opacity 0.15s; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--orange); color: var(--white); }
+  .btn-primary:hover { background: var(--orange-light); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-secondary { background: transparent; color: var(--green); border: 1.5px solid var(--green); }
+  .btn-secondary:hover { background: var(--cream-dark); }
+  .btn-row { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+
+  /* EMAIL GATE */
+  .email-gate { display: none; }
+  .email-gate.visible { display: block; }
+  .gate-card {
+    background: var(--green); border-radius: 16px; padding: 2.5rem;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .gate-card::after {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: rgba(232,98,42,0.15);
+  }
+  .gate-eyebrow { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-light); margin-bottom: 0.75rem; }
+  .gate-headline { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: var(--cream); margin-bottom: 0.75rem; line-height: 1.2; }
+  .gate-sub { font-size: 0.9rem; color: var(--gray-light); margin-bottom: 2rem; line-height: 1.6; }
+  .gate-input-wrap { display: flex; gap: 0.75rem; max-width: 420px; margin: 0 auto 1rem; }
+  .gate-input-wrap input { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--cream); padding-left: 0.75rem; }
+  .gate-input-wrap input::placeholder { color: rgba(255,255,255,0.4); }
+  .gate-input-wrap input:focus { background: rgba(255,255,255,0.15); border-color: var(--orange); }
+  .gate-note { font-size: 0.72rem; color: rgba(255,255,255,0.4); }
+  .gate-error { color: #F5A49A; font-size: 0.82rem; margin-top: 0.5rem; display: none; }
+
+  /* RESULTS */
+  .result-section { display: none; }
+  .result-section.visible { display: block; }
+
+  .result-hero { background: var(--green); border-radius: 12px; padding: 2rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; }
+  .result-hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 180px; height: 180px; border-radius: 50%; background: rgba(232,98,42,0.12); }
+  .result-hero-label { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-light); margin-bottom: 0.5rem; }
+  .result-hero-amount { font-family: 'DM Serif Display', serif; font-size: 3rem; color: var(--cream); line-height: 1; margin-bottom: 0.25rem; }
+  .result-hero-sub { font-size: 0.85rem; color: var(--gray-light); }
+  .result-hero-sub span { color: var(--orange); font-weight: 600; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+  .result-metric { background: var(--white); border-radius: 10px; border: 1px solid var(--cream-dark); padding: 1.25rem; }
+  .result-metric-label { font-size: 0.72rem; color: var(--gray); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .result-metric-value { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--green); line-height: 1; }
+  .result-metric-value.warn { color: var(--red); }
+  .result-metric-sub { font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem; }
+
+  .rec-card { border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .rec-card.warning { background: #FFF8F5; border: 1px solid #F5C4A8; }
+  .rec-card.success { background: #F0FAF4; border: 1px solid #A8DDB8; }
+  .rec-card-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .rec-card.warning .rec-card-title { color: var(--orange); }
+  .rec-card.success .rec-card-title { color: var(--success); }
+  .rec-card p { font-size: 0.9rem; line-height: 1.6; color: var(--ink); }
+  .rec-card strong { color: var(--green); }
+
+  .action-banner { background: var(--green); border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .action-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .action-banner-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-light); margin-bottom: 0.2rem; }
+  .action-banner-text { font-size: 1rem; font-weight: 600; color: var(--cream); }
+
+  .expense-breakdown { margin-bottom: 0; }
+  .bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+  .bar-label { font-size: 0.78rem; color: var(--gray); width: 90px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 8px; background: var(--cream-dark); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; background: var(--green); transition: width 0.6s ease; }
+  .bar-fill.top { background: var(--orange); }
+  .bar-amount { font-size: 0.78rem; font-weight: 600; color: var(--ink); width: 70px; text-align: right; flex-shrink: 0; }
+
+  .plan-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.25rem; }
+  .plan-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--green); }
+  .plan-subtitle { font-size: 0.8rem; color: var(--gray); }
+
+  .week-block { margin-bottom: 1.5rem; }
+  .week-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+  .week-label::after { content: ''; flex: 1; height: 1px; background: var(--cream-dark); }
+
+  .day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
+  .day-cell { aspect-ratio: 1; border-radius: 8px; background: var(--white); border: 1px solid var(--cream-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
+  .day-cell:hover { border-color: var(--green); }
+  .day-cell.checked { background: var(--green); border-color: var(--green); }
+  .day-num { font-size: 0.65rem; font-weight: 600; color: var(--gray); }
+  .day-cell.checked .day-num { color: rgba(255,255,255,0.6); }
+  .day-check { font-size: 1rem; color: var(--cream-dark); }
+  .day-cell.checked .day-check { color: var(--orange); }
+
+  .footer-note { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--cream-dark); font-size: 0.78rem; color: var(--gray-light); text-align: center; line-height: 1.6; }
+  .footer-note a { color: var(--orange); text-decoration: none; }
+
+  .error-msg { color: var(--red); font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .animate { animation: fadeUp 0.4s ease both; }
+  .animate-delay-1 { animation-delay: 0.1s; }
+  .animate-delay-2 { animation-delay: 0.2s; }
+  .animate-delay-3 { animation-delay: 0.3s; }
+  .animate-delay-4 { animation-delay: 0.4s; }
+
+  @media (max-width: 520px) {
+    h1 { font-size: 1.6rem; }
+    .input-row { grid-template-columns: 1fr; }
+    .expense-grid { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: 1fr; }
+    .result-hero-amount { font-size: 2.2rem; }
+    .gate-input-wrap { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">First Step <span>Forward</span></div>
+  <div class="tagline">Finance Assessment</div>
+</header>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<main>
+
+  <!-- STEP 1: INPUT -->
+  <div id="inputSection">
+    <div class="step-indicator">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <span class="step-label">Your Financial Baseline</span>
+    </div>
+    <div class="section-eyebrow">Step 01 — Know Your Baseline</div>
+    <h1>Where do you actually stand?</h1>
+    <p class="section-desc">Honest numbers only. This takes 3 minutes and tells you exactly what your money is doing — and what to do next.</p>
+
+    <div class="card">
+      <div class="card-title">Monthly Income</div>
+      <div class="input-row single">
+        <div class="input-group">
+          <label>Total take-home income per month</label>
+          <div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="income" placeholder="0" min="0"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Monthly Expenses</div>
+      <div class="expense-grid">
+        <div class="expense-item"><label>Housing (rent/mortgage)</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_housing" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Food (groceries)</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_food" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Transport</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_transport" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Utilities</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_utilities" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Subscriptions</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_subscriptions" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Dining out</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_dining" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Shopping</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_shopping" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Other</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="exp_other" placeholder="0" min="0"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Account Balances</div>
+      <div class="expense-grid">
+        <div class="expense-item"><label>Savings account</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="bal_savings" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Checking account</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="bal_checking" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Emergency fund</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="bal_emergency" placeholder="0" min="0"></div></div>
+        <div class="expense-item"><label>Other accounts</label><div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="bal_other" placeholder="0" min="0"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Your Savings Goal</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Amount I want to save</label>
+          <div class="input-wrap"><span class="currency-sym">$</span><input type="number" id="goalAmount" placeholder="0" min="0" class="highlight"></div>
+        </div>
+        <div class="input-group">
+          <label>Target: days from now</label>
+          <div class="input-wrap"><input type="number" id="goalDays" placeholder="28" min="1" style="padding-left:0.75rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="inputError" class="error-msg">Please fill in your income and savings goal before continuing.</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="showEmailGate()">Generate My Plan &rarr;</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: EMAIL GATE -->
+  <div id="emailGate" class="email-gate">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <span class="step-label">Unlock Your Plan</span>
+    </div>
+    <div class="gate-card">
+      <div class="gate-eyebrow">Almost there</div>
+      <div class="gate-headline">Your personalized plan is ready.</div>
+      <div class="gate-sub">Enter your email to unlock your 28-day finance plan — and get the free First Step System PDF delivered instantly.</div>
+      <div class="gate-input-wrap">
+        <input type="email" id="gateEmail" placeholder="your@email.com">
+        <button class="btn btn-primary" id="gateBtn" onclick="submitEmail()">Send it &rarr;</button>
+      </div>
+      <div id="gateError" class="gate-error">Please enter a valid email address.</div>
+      <div class="gate-note">No spam. Unsubscribe anytime.</div>
+    </div>
+    <div class="btn-row" style="justify-content:center; margin-top:1.5rem">
+      <button class="btn btn-secondary" onclick="backToInput()">&larr; Edit my numbers</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: RESULTS -->
+  <div id="resultSection" class="result-section">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <span class="step-label">Your 28-Day Plan</span>
+    </div>
+
+    <div class="section-eyebrow">Your Financial Snapshot</div>
+    <h1 id="resultHeadline">Here's your baseline.</h1>
+
+    <div class="result-hero animate">
+      <div class="result-hero-label">Monthly surplus</div>
+      <div class="result-hero-amount" id="surplusAmount">+$0</div>
+      <div class="result-hero-sub" id="surplusSub">After all expenses</div>
+    </div>
+
+    <div class="result-grid animate animate-delay-1">
+      <div class="result-metric"><div class="result-metric-label">Total income</div><div class="result-metric-value" id="metIncome">$0</div><div class="result-metric-sub">per month</div></div>
+      <div class="result-metric"><div class="result-metric-label">Total expenses</div><div class="result-metric-value" id="metExpenses">$0</div><div class="result-metric-sub">per month</div></div>
+      <div class="result-metric"><div class="result-metric-label">Total assets</div><div class="result-metric-value" id="metAssets">$0</div><div class="result-metric-sub">across all accounts</div></div>
+      <div class="result-metric"><div class="result-metric-label">Savings rate</div><div class="result-metric-value" id="metRate">0%</div><div class="result-metric-sub">of income saved</div></div>
+    </div>
+
+    <div class="card animate animate-delay-2">
+      <div class="card-title">Where your money goes</div>
+      <div class="expense-breakdown" id="expenseBreakdown"></div>
+    </div>
+
+    <div id="recCard" class="animate animate-delay-3"></div>
+
+    <div class="action-banner animate animate-delay-4">
+      <div class="action-banner-icon">⚡</div>
+      <div>
+        <div class="action-banner-label">Your daily micro-action</div>
+        <div class="action-banner-text" id="dailyAction">Transfer $X to savings every morning.</div>
+      </div>
+    </div>
+
+    <div class="card animate animate-delay-4">
+      <div class="plan-header">
+        <div class="plan-title">28-Day Tracker</div>
+        <div class="plan-subtitle">Tap to check off each day</div>
+      </div>
+      <div id="weekBlocks"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="resetAll()">&larr; Start over</button>
+    </div>
+
+    <div class="footer-note">
+      Built by <a href="#">First Step Forward</a> &nbsp;·&nbsp; Systems for starting anything.<br>
+      Get the full 4-week planner at <a href="https://firststepforward.gumroad.com">firststepforward.gumroad.com</a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const fmt = n => '$' + Math.round(n).toLocaleString();
+  const val = id => parseFloat(document.getElementById(id).value) || 0;
+  const STORAGE_KEY = 'fsf_tracker';
+  const EXPENSE_KEYS = [
+    { id: 'exp_housing', label: 'Housing' }, { id: 'exp_food', label: 'Food' },
+    { id: 'exp_transport', label: 'Transport' }, { id: 'exp_utilities', label: 'Utilities' },
+    { id: 'exp_subscriptions', label: 'Subscriptions' }, { id: 'exp_dining', label: 'Dining out' },
+    { id: 'exp_shopping', label: 'Shopping' }, { id: 'exp_other', label: 'Other' },
+  ];
+
+  // Load persisted tracker state
+  function loadTrackerState() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+  }
+  function saveTrackerState(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function showEmailGate() {
+    const income = val('income');
+    const goal = val('goalAmount');
+    if (!income || !goal) {
+      document.getElementById('inputError').style.display = 'block';
+      return;
+    }
+    document.getElementById('inputError').style.display = 'none';
+    document.getElementById('inputSection').style.display = 'none';
+    document.getElementById('emailGate').classList.add('visible');
+    document.getElementById('progressBar').style.width = '50%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function backToInput() {
+    document.getElementById('emailGate').classList.remove('visible');
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('progressBar').style.width = '25%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function submitEmail() {
+    const email = document.getElementById('gateEmail').value.trim();
+    const errEl = document.getElementById('gateError');
+    const btn = document.getElementById('gateBtn');
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      // Proceed regardless of API result — don't block the user
+    } catch {}
+
+    btn.textContent = 'Done ✓';
+    document.getElementById('progressBar').style.width = '75%';
+    setTimeout(() => {
+      document.getElementById('emailGate').classList.remove('visible');
+      calculate();
+    }, 600);
+  }
+
+  function calculate() {
+    const income = val('income');
+    const goal = val('goalAmount');
+    const days = val('goalDays') || 28;
+    const expenses = EXPENSE_KEYS.map(e => ({ ...e, amount: val(e.id) }));
+    const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+    const surplus = income - totalExpenses;
+    const savingsRate = income > 0 ? (surplus / income) * 100 : 0;
+    const totalAssets = val('bal_savings') + val('bal_checking') + val('bal_emergency') + val('bal_other');
+    const dailySavings = goal / days;
+    const monthlySavingsNeeded = dailySavings * 30;
+    const daysAtCurrentSurplus = surplus > 0 ? Math.ceil(goal / (surplus / 30)) : Infinity;
+    const canHitGoal = surplus >= monthlySavingsNeeded;
+
+    document.getElementById('metIncome').textContent = fmt(income);
+    document.getElementById('metExpenses').textContent = fmt(totalExpenses);
+    document.getElementById('metAssets').textContent = fmt(totalAssets);
+    document.getElementById('metRate').textContent = Math.max(0, Math.round(savingsRate)) + '%';
+
+    const surplusEl = document.getElementById('surplusAmount');
+    surplusEl.textContent = (surplus >= 0 ? '+' : '') + fmt(surplus);
+    surplusEl.style.color = surplus >= 0 ? '#F7F4EE' : '#F5A49A';
+    document.getElementById('surplusSub').innerHTML = surplus >= 0
+      ? `After all expenses &nbsp;·&nbsp; <span>${Math.round(savingsRate)}% savings rate</span>`
+      : `You're spending <span>${fmt(Math.abs(surplus))} more than you earn</span>`;
+    document.getElementById('resultHeadline').textContent = surplus >= 0 ? 'Here\'s your baseline.' : 'Here\'s the truth.';
+
+    const sortedExp = [...expenses].filter(e => e.amount > 0).sort((a, b) => b.amount - a.amount);
+    const maxExp = sortedExp[0]?.amount || 1;
+    document.getElementById('expenseBreakdown').innerHTML = sortedExp.map((e, i) => `
+      <div class="bar-row">
+        <div class="bar-label">${e.label}</div>
+        <div class="bar-track"><div class="bar-fill${i === 0 ? ' top' : ''}" style="width:${Math.round((e.amount/maxExp)*100)}%"></div></div>
+        <div class="bar-amount">${fmt(e.amount)}</div>
+      </div>`).join('');
+
+    const topExpense = sortedExp[0];
+    const recEl = document.getElementById('recCard');
+    if (surplus < 0) {
+      recEl.className = 'rec-card warning animate animate-delay-3';
+      recEl.innerHTML = `<div class="rec-card-title">⚠ You're in a deficit</div><p>Your expenses exceed your income by <strong>${fmt(Math.abs(surplus))} per month</strong>. Before setting a savings goal, the priority is closing this gap. Your biggest expense is <strong>${topExpense?.label || 'unknown'} at ${fmt(topExpense?.amount || 0)}/month</strong> — that's where to look first. Even reducing it by 20% would free up <strong>${fmt((topExpense?.amount||0)*0.2)}/month</strong>.</p>`;
+      document.getElementById('dailyAction').textContent = `Cut ${topExpense?.label || 'your top expense'} by 20% and track every purchase today.`;
+    } else if (!canHitGoal) {
+      const shortfall = monthlySavingsNeeded - surplus;
+      const cutTarget = sortedExp.find(e => e.id !== 'exp_housing' && e.amount >= shortfall * 0.5);
+      const realDays = daysAtCurrentSurplus === Infinity ? '—' : daysAtCurrentSurplus;
+      recEl.className = 'rec-card warning animate animate-delay-3';
+      recEl.innerHTML = `<div class="rec-card-title">You need to cut to hit your goal</div><p>To save <strong>${fmt(goal)} in ${days} days</strong>, you need <strong>${fmt(Math.round(dailySavings))}/day</strong>. At your current surplus, you'd hit your goal in <strong>${realDays} days</strong> instead. Consider cutting <strong>${cutTarget ? cutTarget.label + ' (currently ' + fmt(cutTarget.amount) + '/month)' : 'your discretionary spending'}</strong> by <strong>${fmt(Math.round(shortfall))}/month</strong>.</p>`;
+      document.getElementById('dailyAction').textContent = `Transfer ${fmt(Math.round(surplus/30))} to savings every morning — and cut ${cutTarget?.label || 'dining/shopping'} this week.`;
+    } else {
+      recEl.className = 'rec-card success animate animate-delay-3';
+      recEl.innerHTML = `<div class="rec-card-title">✓ You can hit this goal</div><p>Your monthly surplus of <strong>${fmt(surplus)}</strong> is enough to save <strong>${fmt(goal)} in ${days} days</strong>. Your daily action is simple: transfer <strong>${fmt(Math.round(dailySavings))}</strong> every morning before 9am. Don't think about it — just transfer it the moment you wake up.</p>`;
+      document.getElementById('dailyAction').textContent = `Transfer ${fmt(Math.round(dailySavings))} to savings every morning before 9am.`;
+    }
+
+    // Build tracker with localStorage persistence
+    const trackerState = loadTrackerState();
+    const weekBlocksEl = document.getElementById('weekBlocks');
+    weekBlocksEl.innerHTML = '';
+    const totalDays = Math.min(days, 28);
+    const weeks = Math.ceil(totalDays / 7);
+    for (let w = 0; w < weeks; w++) {
+      const block = document.createElement('div');
+      block.className = 'week-block';
+      const wLabel = document.createElement('div');
+      wLabel.className = 'week-label';
+      wLabel.textContent = `Week ${w + 1}`;
+      block.appendChild(wLabel);
+      const grid = document.createElement('div');
+      grid.className = 'day-grid';
+      for (let d = 0; d < 7; d++) {
+        const dayNum = w * 7 + d + 1;
+        if (dayNum > totalDays) break;
+        const cell = document.createElement('div');
+        cell.className = 'day-cell' + (trackerState[dayNum] ? ' checked' : '');
+        cell.innerHTML = `<div class="day-num">${dayNum}</div><div class="day-check">✓</div>`;
+        cell.onclick = () => {
+          cell.classList.toggle('checked');
+          const state = loadTrackerState();
+          if (cell.classList.contains('checked')) state[dayNum] = true;
+          else delete state[dayNum];
+          saveTrackerState(state);
+        };
+        grid.appendChild(cell);
+      }
+      block.appendChild(grid);
+      weekBlocksEl.appendChild(block);
+    }
+
+    document.getElementById('resultSection').classList.add('visible');
+    document.getElementById('progressBar').style.width = '100%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetAll() {
+    document.getElementById('resultSection').classList.remove('visible');
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('progressBar').style.width = '25%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // If returning user has tracker state, show a subtle resume prompt
+  window.addEventListener('load', () => {
+    const state = loadTrackerState();
+    if (Object.keys(state).length > 0) {
+      const desc = document.querySelector('.section-desc');
+      if (desc) desc.innerHTML += ' <span style="color:var(--orange);font-weight:500">Your previous progress is saved.</span>';
+    }
+  });
+</script>
+</body>
+</html>
